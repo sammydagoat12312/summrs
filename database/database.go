@@ -11,20 +11,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (db *MongoDB) CreateGuild(user *discordgo.User, guild *discordgo.Guild) {
+func (db *MongoDB) CreateGuild(botUser *discordgo.User, guild *discordgo.Guild) {
 	_, err = db.FindData(guild.ID)
 	if err == nil {
 		return
 	}
 
-	if _, err = db.Collection.InsertOne(context.Background(), bson.M{"owners": bson.A{guild.OwnerID}, "users": bson.A{guild.OwnerID}, "log-channel": "nil", "prefix": ">", "guild_id": guild.ID, "anti-invite": "off"}); err != nil {
+	if _, err = db.Collection.InsertOne(context.Background(), bson.M{"users": bson.A{guild.OwnerID}, "log-channel": "nil", "prefix": "x", "guild_id": guild.ID, "anti-invite": "off"}); err != nil {
 		return
 	}
 
-	if _, err = db.Collection.UpdateOne(context.Background(), bson.M{"guild_id": guild.ID}, bson.M{"$push": bson.M{"users": user.ID}}); err != nil {
+	if _, err = db.Collection.UpdateOne(context.Background(), bson.M{"guild_id": guild.ID}, bson.M{"$push": bson.M{"users": botUser.ID}}); err != nil {
 		return
 	}
-	//create fucking stuff
 }
 
 func (db *MongoDB) DeleteGuild(guildID string) bool {
@@ -59,47 +58,10 @@ func (db *MongoDB) IsWhitelisted(guildID string, userID string) bool {
 	return false
 }
 
-func (db *MongoDB) IsOwner(guildID string, userID string) bool {
-	var data bson.M
-
-	data, err = db.FindData(guildID)
-	if err != nil {
-		return false
-	}
-
-	for _, whitelistedID := range data["owners"].(bson.A) {
-		if whitelistedID == userID {
-			return true
-		}
-	}
-	return false
-}
-
 func (db *MongoDB) SetData(guildID string, index string, value string) (bool, error) {
 	if _, err = db.Collection.UpdateOne(context.Background(), bson.M{"guild_id": guildID}, bson.M{"$set": bson.M{index: value}}, &options.UpdateOptions{}); err != nil {
 		return false, err
 	}
-	return true, nil
-}
-
-func (db *MongoDB) SetOwner(guildID string, member *discordgo.User, whitelist bool) (bool, error) {
-	whitelisted := db.IsOwner(guildID, member.ID)
-
-	if whitelist && whitelisted {
-		return false, fmt.Errorf("I couldn't seem to make them an owner. Check the owners maybe?")
-	}
-
-	switch whitelist {
-	case true:
-		if _, err = db.Collection.UpdateOne(context.Background(), bson.M{"guild_id": guildID}, bson.M{"$push": bson.M{"owners": member.ID}}, &options.UpdateOptions{}); err != nil {
-			return false, err
-		}
-	case false:
-		if _, err = db.Collection.UpdateOne(context.Background(), bson.M{"guild_id": guildID}, bson.M{"$pull": bson.M{"owners": member.ID}}, &options.UpdateOptions{}); err != nil {
-			return false, err
-		}
-	}
-
 	return true, nil
 }
 
@@ -127,7 +89,7 @@ func (db *MongoDB) SetWhitelist(guildID string, member *discordgo.User, whitelis
 func SetupDB() MongoDB {
 	var db = MongoDB{}
 
-	db.Client, err = mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017/summrs?retryWrites=true&w=majority"))
+	db.Client, err = mongo.NewClient(options.Client().ApplyURI("mongodb+srv://samsoom1234:2DOsaNStOkkRrBO1@cluster0.kcb15.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"))
 
 	if err != nil {
 		panic(err)
@@ -138,7 +100,7 @@ func SetupDB() MongoDB {
 		panic(err)
 	}
 
-	db.Database = db.Client.Database("summrs")
+	db.Database = db.Client.Database("Bot")
 	db.Collection = db.Database.Collection("whitelist")
 
 	return db
