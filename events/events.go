@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/summrs-dev-team/summrs/database"
-	"github.com/summrs-dev-team/summrs/utils"
+	"sammydagoat12312/summrs-source/database"
+	"sammydagoat12312/summrs-source/utils"
 )
 
 func AntiInvite(s *discordgo.Session, m *discordgo.MessageCreate) {
