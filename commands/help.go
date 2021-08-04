@@ -80,12 +80,10 @@ var (
 	defaultHelp = &discordgo.MessageEmbed{
 
 		Fields: []*discordgo.MessageEmbedField{
-			{Name: "**Information**", Value: "*`Displays information related commands`*",Inline: true},
-			{Name: "**Anti**", Value: "*`Displays anti-nuke related commands`*",Inline: true},
-			{Name: "**Moderation**", Value: "*`Displays Moderation related commands.`*",Inline: true},
-			{Name: "**Settings**", Value: "‎‎‎‎‎‏‏‎*`Displays settings releated commands`*",Inline: true},
-			{Name: "**Upvote**", Value: "*`Displays upvoting related commands`*"},
-			{Name: "**Support**", Value: "For support, click [here](https://discord.gg/3RYZtHWuwK)",Inline: true}
+			{Name: "**Information** | [`7`]", Value: "\n`help information`",Inline: true},
+			{Name: "**Anti** | [`3`]", Value: "\n`help anti`",Inline: true},
+			{Name: "**Moderation** | [`10`]", Value: "\n`help moderation`",Inline: true},
+			{Name: "**Settings** | [`3`]", Value: "\n`help settings`",Inline: true},
 		},
 
 		Color: 0x36393F,
